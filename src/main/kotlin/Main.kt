@@ -1,6 +1,5 @@
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory
 import com.googlecode.lanterna.terminal.Terminal
-import java.lang.System.exit
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
@@ -16,6 +15,13 @@ fun main(args: Array<String>) {
 }
 
 private fun usage() {
-    println("Usage: java -jar sokoban.jar <level-name>")
+    println(
+        """
+            Usage: java -jar sokoban.jar level_<number>
+
+                <number> - any number between 01 and 50. For example level_09
+                to play level 9.
+        """.trimIndent()
+    )
     exitProcess(1)
 }
