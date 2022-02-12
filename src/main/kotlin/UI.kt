@@ -26,7 +26,7 @@ interface UI {
         object MoveRight : UIAction()
         object Quit : UIAction()
         object RestartLevel : UIAction()
-        class PickLevel(val levelName: String) : UIAction()
+        class ChangeLevel(val levelName: String) : UIAction()
     }
 
     fun render(level: Level, playerCoord: Coord)
@@ -81,7 +81,7 @@ class TerminalUI : UI {
         textGraphics.putString(0, currentLine, "Controls")
         textGraphics.putString(0, ++currentLine, "  Arrow keys: Move around, push crates")
         textGraphics.putString(0, ++currentLine, "  r: Restart level")
-        textGraphics.putString(0, ++currentLine, "  l: Pick a new level")
+        textGraphics.putString(0, ++currentLine, "  l: Change to a new level")
         textGraphics.putString(0, ++currentLine, "  q: quit")
     }
 
@@ -122,7 +122,7 @@ class TerminalUI : UI {
         val gui = MultiWindowTextGUI(screen, DefaultWindowManager(), EmptySpace(DEFAULT_BG_COLOR))
         gui.addWindowAndWait(panelWindow)
 
-        return UIAction.PickLevel("level_${levelInput.text}")
+        return UIAction.ChangeLevel("level_${levelInput.text}")
     }
 
     override fun displayLevelComplete() {

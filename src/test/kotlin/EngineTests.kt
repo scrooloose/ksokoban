@@ -113,7 +113,7 @@ class EngineTests : DescribeSpec({
         it("changes the level when the PickLevel UI action is given") {
             val levelResPath = "levels/emptyRoom"
             val level = LevelParser.forResourcePath(levelResPath).invoke()
-            val ui = mockUI(listOf(UIAction.PickLevel("trivialCompletableLevel")))
+            val ui = mockUI(listOf(UIAction.ChangeLevel("trivialCompletableLevel")))
             val engine = createEngine(level, ui, levelResPath)
 
             engine.run()

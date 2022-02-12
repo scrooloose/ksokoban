@@ -30,7 +30,7 @@ class Engine(
             UIAction.MoveUp -> moveTo(playerCoord.up())
             UIAction.MoveDown -> moveTo(playerCoord.down())
             UIAction.RestartLevel -> restartLevel()
-            is UIAction.PickLevel -> changeLevel(nextUIAction)
+            is UIAction.ChangeLevel -> changeLevel(nextUIAction)
         }
     }
 
@@ -73,8 +73,8 @@ class Engine(
         playerCoord = level.playerStart
     }
 
-    private fun changeLevel(pickLevelAction: UIAction.PickLevel) {
-        val newLevelResourcePath = "levels/${pickLevelAction.levelName}"
+    private fun changeLevel(changeLevelAction: UIAction.ChangeLevel) {
+        val newLevelResourcePath = "levels/${changeLevelAction.levelName}"
         val newLevel = try {
             LevelParser.forResourcePath(newLevelResourcePath).invoke()
         } catch (e: IllegalArgumentException) {
