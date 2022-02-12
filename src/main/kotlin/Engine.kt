@@ -13,7 +13,7 @@ class Engine(
     fun run() {
         while (!this.quit) {
             renderUI()
-            if(level.isComplete()) {
+            if (level.isComplete()) {
                 ui.displayLevelComplete()
             }
             processNextUIAction()
@@ -23,12 +23,12 @@ class Engine(
     private fun renderUI() = ui.render(level, playerCoord)
 
     private fun processNextUIAction() {
-        when(val nextUIAction = ui.getNextUIAction()) {
+        when (val nextUIAction = ui.getNextUIAction()) {
             UIAction.Quit -> this.quit = true
-            UIAction.MoveLeft ->  moveTo(playerCoord.left())
+            UIAction.MoveLeft -> moveTo(playerCoord.left())
             UIAction.MoveRight -> moveTo(playerCoord.right())
             UIAction.MoveUp -> moveTo(playerCoord.up())
-            UIAction.MoveDown ->  moveTo(playerCoord.down())
+            UIAction.MoveDown -> moveTo(playerCoord.down())
             UIAction.RestartLevel -> restartLevel()
             is UIAction.PickLevel -> changeLevel(nextUIAction)
         }
@@ -50,7 +50,7 @@ class Engine(
         val crate = level.crateAt(moveTo)
         if (crate != null) {
             val nextCoordOver =
-                when(moveTo) {
+                when (moveTo) {
                     playerCoord.right() -> playerCoord.right().right()
                     playerCoord.left() -> playerCoord.left().left()
                     playerCoord.up() -> playerCoord.up().up()

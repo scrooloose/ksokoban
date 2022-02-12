@@ -1,4 +1,4 @@
-import java.io.File
+
 
 class LevelParser(private val levelFileContents: String) {
 
@@ -51,6 +51,5 @@ class LevelParser(private val levelFileContents: String) {
 
             else -> throw IllegalArgumentException("Unknown level symbol: $char")
         }
-
     }
 }

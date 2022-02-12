@@ -1,5 +1,4 @@
 import UI.UIAction
-import com.googlecode.lanterna.SGR
 import com.googlecode.lanterna.Symbols
 import com.googlecode.lanterna.TextCharacter
 import com.googlecode.lanterna.TextColor
@@ -7,11 +6,9 @@ import com.googlecode.lanterna.graphics.TextGraphics
 import com.googlecode.lanterna.gui2.BasicWindow
 import com.googlecode.lanterna.gui2.Button
 import com.googlecode.lanterna.gui2.DefaultWindowManager
-import com.googlecode.lanterna.gui2.Direction
 import com.googlecode.lanterna.gui2.EmptySpace
 import com.googlecode.lanterna.gui2.GridLayout
 import com.googlecode.lanterna.gui2.Label
-import com.googlecode.lanterna.gui2.LinearLayout
 import com.googlecode.lanterna.gui2.MultiWindowTextGUI
 import com.googlecode.lanterna.gui2.Panel
 import com.googlecode.lanterna.gui2.TextBox
@@ -19,7 +16,6 @@ import com.googlecode.lanterna.input.KeyStroke
 import com.googlecode.lanterna.input.KeyType
 import com.googlecode.lanterna.screen.TerminalScreen
 import com.googlecode.lanterna.terminal.Terminal
-
 
 interface UI {
     sealed class UIAction {
@@ -116,7 +112,7 @@ class TerminalUI(val terminal: Terminal) : UI {
     private fun pickLevel(): UIAction {
         val panel = Panel().setLayoutManager(GridLayout(2))
         val panelWindow = BasicWindow()
-        panel.addComponent(Label("Enter level number (1 - 50)"));
+        panel.addComponent(Label("Enter level number (1 - 50)"))
         val levelInput = TextBox().addTo(panel)
         Button("OK") { panelWindow.close() }.addTo(panel)
         panelWindow.component = panel

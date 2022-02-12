@@ -95,6 +95,3 @@ fun createLevel(
     crates = crates,
     playerStart = playerStart,
 )
-
-
-

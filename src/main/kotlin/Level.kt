@@ -20,7 +20,7 @@ class Level(val tiles: List<Tile>, val playerStart: Coord, val crates: List<Crat
         if (targetTiles.isEmpty()) return false
 
         return targetTiles.all { target ->
-            crates.any { crate -> crate.coord == target.coord  }
+            crates.any { crate -> crate.coord == target.coord }
         }
     }
 }
