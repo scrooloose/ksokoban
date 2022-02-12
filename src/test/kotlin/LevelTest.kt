@@ -88,7 +88,8 @@ class LevelTest : DescribeSpec({
 fun createLevel(
     tiles: List<Tile> = emptyList(),
     crates: List<Crate> = emptyList(),
-    playerStart: Coord = Coord(0, 0)
+    playerStart: Coord = Coord(0, 0),
+    name: String = "test-level"
 ) = Level(
     tiles = tiles,
     crates = crates,

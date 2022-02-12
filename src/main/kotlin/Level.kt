@@ -16,6 +16,9 @@ class Level(val tiles: List<Tile>, val playerStart: Coord, val crates: List<Crat
     fun isTargetTile(coord: Coord) = targetTiles.any { it.coord == coord }
 
     fun isComplete(): Boolean {
+        // FIXME: this is a hack for some tests that have rooms with no targets
+        if (targetTiles.isEmpty()) return false
+
         return targetTiles.all { target ->
             crates.any { crate -> crate.coord == target.coord  }
         }

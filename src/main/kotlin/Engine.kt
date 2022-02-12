@@ -1,6 +1,9 @@
+import UI.UIAction
+
 class Engine(
-    val level: Level,
-    val ui: UI
+    var level: Level,
+    var currentLevelResourcePath: String,
+    val ui: UI,
 ) {
     private var quit: Boolean = false
 
@@ -10,23 +13,24 @@ class Engine(
     fun run() {
         while (!this.quit) {
             renderUI()
-            processNextUIAction()
             if(level.isComplete()) {
                 ui.displayLevelComplete()
-                this.quit = true
             }
+            processNextUIAction()
         }
     }
 
     private fun renderUI() = ui.render(level, playerCoord)
 
     private fun processNextUIAction() {
-        when(ui.getNextUIAction()) {
-            UI.UIAction.QUIT -> this.quit = true
-            UI.UIAction.MOVE_LEFT ->  moveTo(playerCoord.left())
-            UI.UIAction.MOVE_RIGHT -> moveTo(playerCoord.right())
-            UI.UIAction.MOVE_UP -> moveTo(playerCoord.up())
-            UI.UIAction.MOVE_DOWN ->  moveTo(playerCoord.down())
+        when(val nextUIAction = ui.getNextUIAction()) {
+            UIAction.Quit -> this.quit = true
+            UIAction.MoveLeft ->  moveTo(playerCoord.left())
+            UIAction.MoveRight -> moveTo(playerCoord.right())
+            UIAction.MoveUp -> moveTo(playerCoord.up())
+            UIAction.MoveDown ->  moveTo(playerCoord.down())
+            UIAction.RestartLevel -> restartLevel()
+            is UIAction.PickLevel -> changeLevel(nextUIAction)
         }
     }
 
@@ -62,5 +66,23 @@ class Engine(
         }
 
         return false
+    }
+
+    private fun restartLevel() {
+        level = LevelParser.forResourcePath(currentLevelResourcePath).invoke()
+        playerCoord = level.playerStart
+    }
+
+    private fun changeLevel(pickLevelAction: UIAction.PickLevel) {
+        val newLevelResourcePath = "levels/${pickLevelAction.levelName}"
+        val newLevel = try {
+            LevelParser.forResourcePath(newLevelResourcePath).invoke()
+        } catch (e: IllegalArgumentException) {
+            // couldn't find level resource
+            return
+        }
+        level = newLevel
+        playerCoord = level.playerStart
+        currentLevelResourcePath = newLevelResourcePath
     }
 }

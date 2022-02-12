@@ -1,15 +1,35 @@
+import UI.UIAction
 import com.googlecode.lanterna.SGR
+import com.googlecode.lanterna.Symbols
 import com.googlecode.lanterna.TextCharacter
 import com.googlecode.lanterna.TextColor
 import com.googlecode.lanterna.graphics.TextGraphics
+import com.googlecode.lanterna.gui2.BasicWindow
+import com.googlecode.lanterna.gui2.Button
+import com.googlecode.lanterna.gui2.DefaultWindowManager
+import com.googlecode.lanterna.gui2.Direction
+import com.googlecode.lanterna.gui2.EmptySpace
+import com.googlecode.lanterna.gui2.GridLayout
+import com.googlecode.lanterna.gui2.Label
+import com.googlecode.lanterna.gui2.LinearLayout
+import com.googlecode.lanterna.gui2.MultiWindowTextGUI
+import com.googlecode.lanterna.gui2.Panel
+import com.googlecode.lanterna.gui2.TextBox
 import com.googlecode.lanterna.input.KeyStroke
 import com.googlecode.lanterna.input.KeyType
 import com.googlecode.lanterna.screen.TerminalScreen
 import com.googlecode.lanterna.terminal.Terminal
 
+
 interface UI {
-    enum class UIAction {
-        MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, QUIT
+    sealed class UIAction {
+        object MoveUp : UIAction()
+        object MoveDown : UIAction()
+        object MoveLeft : UIAction()
+        object MoveRight : UIAction()
+        object Quit : UIAction()
+        object RestartLevel : UIAction()
+        class PickLevel(val levelName: String) : UIAction()
     }
 
     fun render(level: Level, playerCoord: Coord)
@@ -35,31 +55,36 @@ class TerminalUI(val terminal: Terminal) : UI {
         level.tiles.forEach { renderTile(it) }
         level.crates.forEach { renderCrate(it, level) }
         renderPlayer(playerCoord)
+
+        renderInstructions(level)
         screen.refresh()
     }
 
     private fun renderTile(tile: Tile) {
-        val color =
-            if (tile.symbol == LevelParser.TARGET_SYM)
-                TextColor.ANSI.YELLOW
-            else
-                TextColor.ANSI.WHITE
-
-        putChar(tile.symbol, tile.coord, fg = color)
+        if (tile.symbol == LevelParser.TARGET_SYM)
+            putChar(Symbols.BLOCK_SPARSE.toString(), tile.coord, fg = TextColor.ANSI.YELLOW)
+        else
+            putChar(tile.symbol, tile.coord, fg = TextColor.ANSI.WHITE)
     }
 
     private fun renderCrate(crate: Crate, level: Level) {
-        val color =
-            if (level.isTargetTile(crate.coord))
-                TextColor.ANSI.GREEN
-            else
-                TextColor.ANSI.RED
-
-        putChar(LevelParser.CRATE_SYM, crate.coord, fg = color)
+        if (level.isTargetTile(crate.coord))
+            putChar(Symbols.BLOCK_SOLID.toString(), crate.coord, fg = TextColor.ANSI.GREEN)
+        else
+            putChar(Symbols.BLOCK_MIDDLE.toString(), crate.coord, fg = TextColor.ANSI.RED)
     }
 
     private fun renderPlayer(coord: Coord) {
         putChar("@", coord)
+    }
+
+    private fun renderInstructions(level: Level) {
+        var currentLine = level.height + 3
+        textGraphics.putString(0, currentLine, "Controls")
+        textGraphics.putString(0, ++currentLine, "  Arrow keys: Move around, push crates")
+        textGraphics.putString(0, ++currentLine, "  r: Restart level")
+        textGraphics.putString(0, ++currentLine, "  l: Pick a new level")
+        textGraphics.putString(0, ++currentLine, "  q: quit")
     }
 
     private fun putChar(
@@ -71,21 +96,41 @@ class TerminalUI(val terminal: Terminal) : UI {
         textGraphics.setCharacter(coord.x, coord.y, TextCharacter.fromString(c, fg, bg)[0])
     }
 
-    override fun getNextUIAction(): UI.UIAction {
+    override fun getNextUIAction(): UIAction {
         while (true) {
             val keyStroke: KeyStroke = terminal.readInput()
 
-            if (keyStroke.character == 'q') return UI.UIAction.QUIT
-            if (keyStroke.keyType == KeyType.ArrowLeft) return UI.UIAction.MOVE_LEFT
-            if (keyStroke.keyType == KeyType.ArrowRight) return UI.UIAction.MOVE_RIGHT
-            if (keyStroke.keyType == KeyType.ArrowUp) return UI.UIAction.MOVE_UP
-            if (keyStroke.keyType == KeyType.ArrowDown) return UI.UIAction.MOVE_DOWN
+            if (keyStroke.character == 'q') {
+                screen.stopScreen()
+                return UIAction.Quit
+            }
+            if (keyStroke.character == 'r') return UIAction.RestartLevel
+            if (keyStroke.character == 'l') return pickLevel()
+            if (keyStroke.keyType == KeyType.ArrowLeft) return UIAction.MoveLeft
+            if (keyStroke.keyType == KeyType.ArrowRight) return UIAction.MoveRight
+            if (keyStroke.keyType == KeyType.ArrowUp) return UIAction.MoveUp
+            if (keyStroke.keyType == KeyType.ArrowDown) return UIAction.MoveDown
         }
     }
 
+    private fun pickLevel(): UIAction {
+        val panel = Panel().setLayoutManager(GridLayout(2))
+        val panelWindow = BasicWindow()
+        panel.addComponent(Label("Enter level number (1 - 50)"));
+        val levelInput = TextBox().addTo(panel)
+        Button("OK") { panelWindow.close() }.addTo(panel)
+        panelWindow.component = panel
+
+        val gui = MultiWindowTextGUI(screen, DefaultWindowManager(), EmptySpace(DEFAULT_BG_COLOR))
+        gui.addWindowAndWait(panelWindow)
+
+        return UIAction.PickLevel("level_${levelInput.text}")
+    }
+
     override fun displayLevelComplete() {
-        terminal.clearScreen()
-        textGraphics.putString(0, 0, "Level complete!", SGR.BOLD)
-        terminal.flush()
+        screen.clear()
+        textGraphics.putString(0, 0, "Level complete!")
+        textGraphics.putString(0, 2, "Push 'l' to select another level!")
+        screen.refresh()
     }
 }
