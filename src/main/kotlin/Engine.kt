@@ -9,8 +9,8 @@ class Engine(
 
     fun run() {
         while (!this.quit) {
-            ui.render(level, playerCoord)
-            processInput()
+            renderUI()
+            processNextUIAction()
             if(level.isComplete()) {
                 ui.displayLevelComplete()
                 this.quit = true
@@ -18,7 +18,9 @@ class Engine(
         }
     }
 
-    private fun processInput() {
+    private fun renderUI() = ui.render(level, playerCoord)
+
+    private fun processNextUIAction() {
         when(ui.getNextUIAction()) {
             UI.UIAction.QUIT -> this.quit = true
             UI.UIAction.MOVE_LEFT ->  moveTo(playerCoord.left())

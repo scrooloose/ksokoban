@@ -8,7 +8,7 @@ class LevelParserTests : DescribeSpec({
         assertThat(tileInLevel).isEqualTo(tile)
     }
 
-    describe("invoke()") {
+    describe("invoke") {
         it("returns the level from the given file") {
             val level = LevelParser.forResourcePath("levels/simpleLevel").invoke()
 

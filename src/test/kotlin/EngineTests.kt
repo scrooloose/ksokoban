@@ -10,7 +10,7 @@ import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalKotest::class, ExperimentalCoroutinesApi::class)
 class EngineTests : DescribeSpec({
-    describe("run()") {
+    describe("run") {
         val emptyRoomLevel = LevelParser.forResourcePath("levels/emptyRoom").invoke()
 
         fun mockUI(actions: List<UIAction>): UI {
