@@ -15,6 +15,7 @@ import com.googlecode.lanterna.gui2.TextBox
 import com.googlecode.lanterna.input.KeyStroke
 import com.googlecode.lanterna.input.KeyType
 import com.googlecode.lanterna.screen.TerminalScreen
+import com.googlecode.lanterna.terminal.DefaultTerminalFactory
 import com.googlecode.lanterna.terminal.Terminal
 
 interface UI {
@@ -33,7 +34,8 @@ interface UI {
     fun displayLevelComplete()
 }
 
-class TerminalUI(val terminal: Terminal) : UI {
+class TerminalUI : UI {
+    private val terminal: Terminal = DefaultTerminalFactory().createTerminal()
     private val screen: TerminalScreen = TerminalScreen(terminal)
     private val textGraphics: TextGraphics = screen.newTextGraphics()
     private val DEFAULT_BG_COLOR = TextColor.ANSI.BLACK
